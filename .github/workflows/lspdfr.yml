@@ -1,0 +1,57 @@
+name: Build LSPDFR lighting plugin
+
+on:
+  push:
+    branches: [master]
+    paths:
+      - "lspdfr/**"
+      - ".github/workflows/lspdfr.yml"
+  pull_request:
+    paths:
+      - "lspdfr/**"
+      - ".github/workflows/lspdfr.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "8.0.x"
+
+      - name: Build plugin
+        run: dotnet build lspdfr/SonoranStudio.LSPDFR/SonoranStudio.LSPDFR.csproj --configuration Release
+
+      - name: Package plugin
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Path package/Plugins -Force | Out-Null
+          Copy-Item lspdfr/SonoranStudio.LSPDFR/bin/Release/net48/SonoranStudio.LSPDFR.dll package/Plugins/
+          Copy-Item lspdfr/README.txt package/
+          Compress-Archive -Path package/* -DestinationPath Sonoran-Studio-LSPDFR.zip -Force
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Sonoran-Studio-LSPDFR
+          path: Sonoran-Studio-LSPDFR.zip
+
+      - name: Publish stable download
+        if: github.event_name != 'pull_request' && github.ref == 'refs/heads/master'
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: lspdfr-latest
+          name: Sonoran Studio LSPDFR Plugin
+          body: |
+            Lightweight RAGE Plugin Hook integration for Sonoran Studio smart lighting.
+
+            [Installation guide](https://docs.sonoransoftware.com/studio/sonoran-studio/smart-lighting#lspdfr)
+          prerelease: true
+          make_latest: false
+          overwrite_files: true
+          files: Sonoran-Studio-LSPDFR.zip
