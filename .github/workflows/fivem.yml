@@ -1,0 +1,50 @@
+name: Package FiveM resource
+
+on:
+  push:
+    branches: [master]
+    paths:
+      - "fivem/**"
+      - ".github/workflows/fivem.yml"
+  pull_request:
+    paths:
+      - "fivem/**"
+      - ".github/workflows/fivem.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  package:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Package resource
+        run: |
+          mkdir -p package
+          cp -R fivem/sonoran_studio package/
+          cp fivem/README.txt package/
+          cd package
+          zip -r ../Sonoran-Studio-FiveM.zip sonoran_studio README.txt
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Sonoran-Studio-FiveM
+          path: Sonoran-Studio-FiveM.zip
+
+      - name: Publish stable download
+        if: github.event_name != 'pull_request' && github.ref == 'refs/heads/master'
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: fivem-latest
+          name: Sonoran Studio FiveM Resource
+          body: |
+            Lightweight standalone FiveM integration for Sonoran Studio smart devices and Streamer.bot triggers. SonoranCAD is not required.
+
+            Do not install this alongside SonoranCAD; CAD already includes the Studio integration.
+          prerelease: true
+          make_latest: false
+          overwrite_files: true
+          files: Sonoran-Studio-FiveM.zip

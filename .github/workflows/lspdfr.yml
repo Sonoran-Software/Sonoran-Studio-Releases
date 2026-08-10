@@ -1,4 +1,4 @@
-name: Build LSPDFR lighting plugin
+name: Build LSPDFR integration
 
 on:
   push:
@@ -48,7 +48,7 @@ jobs:
           tag_name: lspdfr-latest
           name: Sonoran Studio LSPDFR Plugin
           body: |
-            Lightweight RAGE Plugin Hook integration for Sonoran Studio smart lighting.
+            Lightweight RAGE Plugin Hook integration for Sonoran Studio smart lighting, gameplay moments, and supported overlay data.
 
             [Installation guide](https://docs.sonoransoftware.com/studio/sonoran-studio/smart-lighting#lspdfr)
           prerelease: true
