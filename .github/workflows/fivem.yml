@@ -17,17 +17,38 @@ permissions:
 
 jobs:
   package:
+    if: github.event_name != 'push' || github.actor != 'github-actions[bot]'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Determine release version
+        id: version
+        if: github.event_name != 'pull_request' && github.ref == 'refs/heads/master'
+        shell: bash
+        run: |
+          CURRENT_VERSION=$(grep -oP "version '\K[0-9]+\.[0-9]+\.[0-9]+" fivem/sonoran_studio/fxmanifest.lua)
+          IFS='.' read -r MAJOR MINOR PATCH <<< "$CURRENT_VERSION"
+          VERSION="$MAJOR.$MINOR.$((PATCH + 1))"
+          sed -Ei "s/version '[0-9]+\.[0-9]+\.[0-9]+'/version '$VERSION'/" fivem/sonoran_studio/fxmanifest.lua
+          jq --arg version "$VERSION" '.resource = $version' fivem/sonoran_studio/version.json > fivem/sonoran_studio/version.json.tmp
+          mv fivem/sonoran_studio/version.json.tmp fivem/sonoran_studio/version.json
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "Packaging Sonoran Studio FiveM $VERSION"
+
+      - name: Install updater dependency
+        run: npm ci --omit=dev --prefix fivem/sonoran_studio
 
       - name: Package resource
         run: |
-          mkdir -p package
-          cp -R fivem/sonoran_studio package/
-          cp fivem/README.txt package/
+          mkdir -p 'package/[sonoran_studio]'
+          cp -R fivem/sonoran_studio 'package/[sonoran_studio]/'
+          cp -R fivem/sonoran_studio_updatehelper 'package/[sonoran_studio]/'
+          cp fivem/README.txt 'package/[sonoran_studio]/'
           cd package
-          zip -r ../Sonoran-Studio-FiveM.zip sonoran_studio README.txt
+          zip -r ../Sonoran-Studio-FiveM.zip '[sonoran_studio]'
 
       - uses: actions/upload-artifact@v4
         with:
@@ -48,3 +69,13 @@ jobs:
           make_latest: false
           overwrite_files: true
           files: Sonoran-Studio-FiveM.zip
+
+      - name: Commit release version
+        if: github.event_name != 'pull_request' && github.ref == 'refs/heads/master'
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add fivem/sonoran_studio/fxmanifest.lua fivem/sonoran_studio/version.json
+          git commit -m "release: Studio FiveM v${{ steps.version.outputs.version }}"
+          git push origin HEAD:master

@@ -1,0 +1,8 @@
+{
+  "name": "sonoran-studio-fivem",
+  "private": true,
+  "version": "1.0.0",
+  "dependencies": {
+    "unzipper": "0.12.5"
+  }
+}

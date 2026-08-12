@@ -7,6 +7,11 @@ version '1.0.0'
 
 client_script 'client.lua'
 
+server_scripts {
+    'server/unzip.js',
+    'server/updater.lua'
+}
+
 ui_page 'nui/index.html'
 
 files {
