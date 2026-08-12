@@ -3,7 +3,7 @@ game 'gta5'
 
 author 'Sonoran Software'
 description 'Standalone FiveM integration for Sonoran Studio'
-version '1.0.0'
+version '1.0.1'
 
 client_script 'client.lua'
 
