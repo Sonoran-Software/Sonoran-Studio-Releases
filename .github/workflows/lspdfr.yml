@@ -5,10 +5,12 @@ on:
     branches: [master]
     paths:
       - "lspdfr/**"
+      - "LICENSE"
       - ".github/workflows/lspdfr.yml"
   pull_request:
     paths:
       - "lspdfr/**"
+      - "LICENSE"
       - ".github/workflows/lspdfr.yml"
   workflow_dispatch:
 
@@ -34,6 +36,7 @@ jobs:
           New-Item -ItemType Directory -Path package/Plugins -Force | Out-Null
           Copy-Item lspdfr/SonoranStudio.LSPDFR/bin/Release/net48/SonoranStudio.LSPDFR.dll package/Plugins/
           Copy-Item lspdfr/README.txt package/
+          Copy-Item LICENSE package/
           Compress-Archive -Path package/* -DestinationPath Sonoran-Studio-LSPDFR.zip -Force
 
       - uses: actions/upload-artifact@v4

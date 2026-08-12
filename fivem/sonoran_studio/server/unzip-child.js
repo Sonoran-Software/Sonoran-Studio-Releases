@@ -40,7 +40,11 @@
         }
     }
 
-    process.once("message", ({ file, destination }) => {
+    process.once("message", ({ probe, file, destination }) => {
+        if (probe) {
+            sendResult({ ok: true }, 0);
+            return;
+        }
         extract(file, destination)
             .then(() => sendResult({ ok: true }, 0))
             .catch((error) => sendResult({ ok: false, error: error.message }, 1));

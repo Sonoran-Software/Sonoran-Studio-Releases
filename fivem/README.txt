@@ -7,3 +7,4 @@ INSTALL
 4. Restart the server and keep the Sonoran Studio desktop companion open while playing.
 
 Do not install this resource alongside SonoranCAD. SonoranCAD already includes the same Studio integration.
+Automatic updates are enabled by default. Run "sonoranstudio update" in the server console to check immediately.

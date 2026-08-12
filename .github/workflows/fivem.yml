@@ -5,10 +5,12 @@ on:
     branches: [master]
     paths:
       - "fivem/**"
+      - "LICENSE"
       - ".github/workflows/fivem.yml"
   pull_request:
     paths:
       - "fivem/**"
+      - "LICENSE"
       - ".github/workflows/fivem.yml"
   workflow_dispatch:
 
@@ -47,6 +49,7 @@ jobs:
           cp -R fivem/sonoran_studio 'package/[sonoran_studio]/'
           cp -R fivem/sonoran_studio_updatehelper 'package/[sonoran_studio]/'
           cp fivem/README.txt 'package/[sonoran_studio]/'
+          cp LICENSE 'package/[sonoran_studio]/'
           cd package
           zip -r ../Sonoran-Studio-FiveM.zip '[sonoran_studio]'
 
