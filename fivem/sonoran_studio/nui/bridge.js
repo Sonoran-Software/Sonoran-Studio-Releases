@@ -9,8 +9,8 @@
             if (!response.ok) {
                 console.warn(`[Sonoran Studio] ${path} rejected a message with status ${response.status}.`);
             }
-        } catch (error) {
-            console.warn(`[Sonoran Studio] Desktop app is unavailable: ${error.message}`);
+        } catch {
+            // The Sonoran Studio desktop companion is optional, so an unavailable local endpoint is expected.
         }
     }
 
